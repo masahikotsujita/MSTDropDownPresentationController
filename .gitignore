@@ -19,6 +19,9 @@ DerivedData
 *.hmap
 *.ipa
 
+# IntelliJ IDEA
+**/.idea/
+
 # Bundler
 .bundle
 
