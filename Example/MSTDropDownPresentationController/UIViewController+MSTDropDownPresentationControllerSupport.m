@@ -19,6 +19,9 @@ static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransit
 @implementation MSTDropDownTransitioningDelegateImpl
 
 - (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(UIViewController *)presenting sourceViewController:(UIViewController *)source {
+    if (!presenting) {
+        presenting = source;
+    }
     return [[MSTDropDownPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
 }
 
