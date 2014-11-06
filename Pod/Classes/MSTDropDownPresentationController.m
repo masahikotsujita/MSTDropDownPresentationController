@@ -94,24 +94,33 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
             if (viewController == _contextualViewController) {
                 // Primary
                 if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
-                    CGRect frame = viewController.view.frame;
-                    return [viewController.view convertRect:frame toView:self.containerView];
+                    CGRect frameInViewControllerView = viewController.view.bounds;
+                    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+                    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+                    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+                    return frameInContainerView;
                 } else {
                     return CGRectZero;
                 }
             } else {
                 // Detail
                 if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
-                    CGRect frame = viewController.view.frame;
-                    return [viewController.view convertRect:frame toView:self.containerView];
+                    CGRect frameInViewControllerView = viewController.view.bounds;
+                    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+                    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+                    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+                    return frameInContainerView;
                 } else {
                     return CGRectZero;
                 }
             }
         } else {
             viewController = _contextualViewController;
-            CGRect frame = viewController.view.frame;
-            return [viewController.view convertRect:frame toView:self.containerView];
+            CGRect frameInViewControllerView = viewController.view.bounds;
+            frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+            frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+            CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+            return frameInContainerView;
         }
     } else if ([self.presentingViewController isKindOfClass:[UITabBarController class]]) {
         UITabBarController *tabBarController = (UITabBarController *) self.presentingViewController;
@@ -123,17 +132,26 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
         } else {
             viewController = selectedViewController;
         }
-        CGRect frame = viewController.view.frame;
-        return [viewController.view convertRect:frame toView:self.containerView];
+        CGRect frameInViewControllerView = viewController.view.bounds;
+        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+        return frameInContainerView;
     } else if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
         UINavigationController *navigationController = (UINavigationController *) self.presentingViewController;
         UIViewController *viewController = navigationController.topViewController;
-        CGRect frame = viewController.view.frame;
-        return [viewController.view convertRect:frame toView:self.containerView];
+        CGRect frameInViewControllerView = viewController.view.bounds;
+        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+        return frameInContainerView;
     } else {
         UIViewController *viewController = self.presentingViewController;
-        CGRect frame = viewController.view.frame;
-        return [viewController.view convertRect:frame toView:self.containerView];
+        CGRect frameInViewControllerView = viewController.view.bounds;
+        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+        return frameInContainerView;
     }
 }
 
@@ -152,7 +170,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 
 - (void)presentationTransitionWillBegin {
     // Background View
-    UIView *backgroundView = [[UIView alloc] init];
+    UIView *backgroundView = [[UIView alloc] initWithFrame:[self frameOfOuterClipViewInContainerView]];
     backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     backgroundView.backgroundColor = [UIColor blackColor];
     backgroundView.alpha = 0.0;
@@ -192,8 +210,6 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     // Add Constraints
 
     NSDictionary *views = NSDictionaryOfVariableBindings(backgroundView, tapGestureRecognitionView, outerClipView, innerClipView);
-    [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[backgroundView]|" options:0 metrics:nil views:views]];
-    [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[backgroundView]|" options:0 metrics:nil views:views]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
 
@@ -233,6 +249,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 }
 
 - (void)containerViewWillLayoutSubviews {
+    _backgroundView.frame = [self frameOfOuterClipViewInContainerView];
     _outerClipView.frame = [self frameOfOuterClipViewInContainerView];
     _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:YES];
     CGRect presentedViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
@@ -245,15 +262,18 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
-    //_outerClipView.alpha = 0;
+    _backgroundView.alpha = 0;
+    _outerClipView.alpha = 0;
     [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+        _backgroundView.frame = [self frameOfOuterClipViewInContainerView];
         _outerClipView.frame = [self frameOfOuterClipViewInContainerView];
         _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:YES];
         CGRect presentedViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
         presentedViewFrame.origin = CGPointZero;
         self.presentedView.frame = presentedViewFrame;
     } completion:^(id <UIViewControllerTransitionCoordinatorContext> context) {
-        //_outerClipView.alpha = 1;
+        _backgroundView.alpha = self.backgroundAlpha;
+        _outerClipView.alpha = 1;
     }];
 }
 
