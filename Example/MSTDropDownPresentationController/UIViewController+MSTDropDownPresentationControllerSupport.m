@@ -12,11 +12,11 @@
 
 static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransitioningDelgateAssociationKey;
 
-@interface MSTDropDownTransitioningDelegateImpl : NSObject <UIViewControllerTransitioningDelegate>
+@interface MSTDropDownTransitioningDelegateObject : NSObject <UIViewControllerTransitioningDelegate>
 
 @end
 
-@implementation MSTDropDownTransitioningDelegateImpl
+@implementation MSTDropDownTransitioningDelegateObject
 
 - (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(UIViewController *)presenting sourceViewController:(UIViewController *)source {
     if (!presenting) {
@@ -40,7 +40,7 @@ static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransit
 - (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate {
     id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey);
     if (!object) {
-        object = [[MSTDropDownTransitioningDelegateImpl alloc] init];
+        object = [[MSTDropDownTransitioningDelegateObject alloc] init];
         objc_setAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return object;
