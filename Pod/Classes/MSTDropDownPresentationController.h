@@ -63,6 +63,8 @@
  */
 - (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate;
 
+@property (strong, nonatomic, readonly) MSTDropDownPresentationController *mst_dropDownPresentationController;
+
 @end
 
 /**
