@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "MSTDropDownPresentationController"
-  s.version          = "0.1.0"
+  s.version          = "0.2.0"
   s.summary          = "A Drop Down Presentation Controller like Tweetbot 3's Timeline/Lists switcher."
   s.description      = <<-DESC
                        A Drop Down Presentation Controller like Tweetbot 3's Timeline/Lists switcher.
