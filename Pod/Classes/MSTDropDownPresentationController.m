@@ -7,6 +7,7 @@
 //
 
 #import "MSTDropDownPresentationController.h"
+#import <objc/runtime.h>
 
 static const NSInteger MSTDropDownPresentationControllerTapGestureRecognitionViewTag = 101;
 static const NSInteger MSTDropDownPresentationControllerTopEdgeClipViewTag = 102;
@@ -314,6 +315,58 @@ static const NSTimeInterval MSTDropDownAnimationControllerDefaultAnimationDurati
         [presentedController.view removeFromSuperview];
         [transitionContext completeTransition:YES];
     }];
+}
+
+@end
+
+static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransitioningDelgateAssociationKey;
+
+@interface MSTDropDownTransitioningDelegateObject : NSObject <UIViewControllerTransitioningDelegate>
+
+@end
+
+@implementation MSTDropDownTransitioningDelegateObject
+
+- (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(UIViewController *)presenting sourceViewController:(UIViewController *)source {
+    if (!presenting) {
+        presenting = source;
+    }
+    return [[MSTDropDownPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    return [[MSTDropDownAnimationController alloc] init];
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return [[MSTDropDownAnimationController alloc] init];
+}
+
+@end
+
+@implementation UIViewController (MSTDropDownPresentationControllerSupport)
+
+- (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate {
+    id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey);
+    if (!object) {
+        object = [[MSTDropDownTransitioningDelegateObject alloc] init];
+        objc_setAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return object;
+}
+
+@end
+
+@implementation MSTDropDownStoryboardSegue
+
+- (void)perform {
+    if (self.unwinding) {
+        [self.destinationViewController dismissViewControllerAnimated:YES completion:NULL];
+    } else {
+        ((UIViewController *)self.destinationViewController).modalPresentationStyle = UIModalPresentationCustom;
+        ((UIViewController *)self.destinationViewController).transitioningDelegate = ((UIViewController *)self.sourceViewController).mst_dropDownTransitioningDelegate;
+        [self.sourceViewController presentViewController:self.destinationViewController animated:YES completion:NULL];
+    }
 }
 
 @end

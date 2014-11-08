@@ -52,3 +52,27 @@
 @interface MSTDropDownAnimationController : NSObject <UIViewControllerAnimatedTransitioning>
 
 @end
+
+/**
+ MSTDropDownPresentationControllerSupport category adds MSTDropDownPresentationController supporting methods to UIViewController.
+ */
+@interface UIViewController (MSTDropDownPresentationControllerSupport)
+
+/**
+ Obtain a transitioning delegate object which vends presentation controller and animation controller for drop down transition.
+ */
+- (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate;
+
+@end
+
+/**
+ MSTDropDownStoryboardSegue is a custom storyboard segue which performs drop down transition.
+ */
+@interface MSTDropDownStoryboardSegue : UIStoryboardSegue
+
+/**
+ A Boolean value indicating whether receiver is unwind segue or not.
+ */
+@property (assign, nonatomic) BOOL unwinding;
+
+@end

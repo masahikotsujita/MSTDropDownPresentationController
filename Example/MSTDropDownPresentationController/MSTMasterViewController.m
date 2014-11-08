@@ -8,7 +8,6 @@
 
 #import "MSTMasterViewController.h"
 #import "MSTDetailViewController.h"
-#import "MSTDropDownMenuViewController.h"
 
 @interface MSTMasterViewController ()
 
@@ -39,7 +38,7 @@
     }
 }
 
-- (IBAction)didLongPressTitleView:(UILongPressGestureRecognizer *)sender {
+- (IBAction)didLongPressTitleLabel:(UILongPressGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
         [self performSegueWithIdentifier:@"DropDownSegue" sender:sender];
     }

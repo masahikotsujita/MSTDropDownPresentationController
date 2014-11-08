@@ -24,8 +24,6 @@
 		D621C4451A08BF74001F37D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D621C43F1A08BF74001F37D0 /* Main.storyboard */; };
 		D621C4461A08BF74001F37D0 /* MSTDropDownMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */; };
 		D621C4481A08BF74001F37D0 /* MSTMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */; };
-		D6C6B1B61A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C6B1B51A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.m */; };
-		D6C6B1B91A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C6B1B81A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.m */; };
 		D6C6B1BC1A08FC8B003EEE90 /* MSTDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -70,10 +68,6 @@
 		D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDropDownMenuViewController.m; sourceTree = "<group>"; };
 		D621C4431A08BF74001F37D0 /* MSTMasterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTMasterViewController.h; sourceTree = "<group>"; };
 		D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTMasterViewController.m; sourceTree = "<group>"; };
-		D6C6B1B41A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDropDownStoryboardSegue.h; sourceTree = "<group>"; };
-		D6C6B1B51A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDropDownStoryboardSegue.m; sourceTree = "<group>"; };
-		D6C6B1B71A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+MSTDropDownPresentationControllerSupport.h"; sourceTree = "<group>"; };
-		D6C6B1B81A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+MSTDropDownPresentationControllerSupport.m"; sourceTree = "<group>"; };
 		D6C6B1BA1A08FC8B003EEE90 /* MSTDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDetailViewController.h; sourceTree = "<group>"; };
 		D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDetailViewController.m; sourceTree = "<group>"; };
 		F19C8BE0318C02416A27489C /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,10 +154,6 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				D6C6B1B41A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.h */,
-				D6C6B1B51A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.m */,
-				D6C6B1B71A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.h */,
-				D6C6B1B81A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.m */,
 				6003F595195388D20070C39A /* MSTDropDownPresentationController-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -379,9 +369,7 @@
 			files = (
 				6003F59E195388D20070C39A /* MSTAppDelegate.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				D6C6B1B91A08F5CB003EEE90 /* UIViewController+MSTDropDownPresentationControllerSupport.m in Sources */,
 				D621C4481A08BF74001F37D0 /* MSTMasterViewController.m in Sources */,
-				D6C6B1B61A08F1EC003EEE90 /* MSTDropDownStoryboardSegue.m in Sources */,
 				D621C4461A08BF74001F37D0 /* MSTDropDownMenuViewController.m in Sources */,
 				D6C6B1BC1A08FC8B003EEE90 /* MSTDetailViewController.m in Sources */,
 			);
