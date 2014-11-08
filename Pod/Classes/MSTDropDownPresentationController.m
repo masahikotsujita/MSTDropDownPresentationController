@@ -75,183 +75,57 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 
 #pragma mark - Calculating View Frames
 
-- (CGRect)frameOfViewControllerViewInContainerView:(UIViewController *)viewController {
-    CGRect frameInViewControllerView = viewController.view.bounds;
-    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-    return frameInContainerView;
-}
-
 - (CGRect)frameOfOuterClipViewInContainerView {
-    BOOL flag = NO;
-    if (self.presentingViewController == self.sourceViewController) {
-        flag = YES;
-    }
-    if ([self.presentingViewController isKindOfClass:[UISplitViewController class]]) {
-        UISplitViewController *splitViewController = (UISplitViewController *)self.presentingViewController;
-        if (splitViewController.isCollapsed) {
-            UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
-            if (primaryViewController == self.sourceViewController) {
-                flag = YES;
-            }
-            if ([primaryViewController isKindOfClass:[UITabBarController class]]) {
-                UITabBarController *tabBarController = (UITabBarController *) primaryViewController;
-                UIViewController *selectedViewController = tabBarController.selectedViewController;
-                if (selectedViewController == self.sourceViewController) {
-                    flag = YES;
-                }
-                if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
-                    UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-                    if (navigationController.topViewController == self.sourceViewController || flag) {
-                        return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-                    } else {
-                        return CGRectZero;
-                    }
-                } else {
-                    return [self frameOfViewControllerViewInContainerView:selectedViewController];
-                }
-            } else if ([primaryViewController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navigationController = (UINavigationController *) primaryViewController;
-                UIViewController *topViewController = navigationController.topViewController;
-                if (topViewController == self.sourceViewController) {
-                    flag = YES;
-                }
-                if ([topViewController isKindOfClass:[UINavigationController class]]) {
-                    UINavigationController *navigationControllerInNavigationController = (UINavigationController *) topViewController;
-                    if (navigationControllerInNavigationController.topViewController == self.sourceViewController || flag) {
-                        return [self frameOfViewControllerViewInContainerView:navigationControllerInNavigationController.topViewController];
-                    } else {
-                        return CGRectZero;
-                    }
-                } else if (flag) {
-                    return [self frameOfViewControllerViewInContainerView:topViewController];
-                } else {
-                    return CGRectZero;
-                }
-            } else if (flag) {
-                return [self frameOfViewControllerViewInContainerView:primaryViewController];
-            } else {
-                return CGRectZero;
-            }
-        } else {
-            UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
-            if (primaryViewController == self.sourceViewController) {
-                flag = YES;
-            }
-            if ([primaryViewController isKindOfClass:[UINavigationController class]]) {
-                UINavigationController *navigationController = (UINavigationController *) primaryViewController;
-                if (navigationController.topViewController == self.sourceViewController || flag) {
-                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
-                        return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-                    } else {
-                        return CGRectZero;
-                    }
-                }
-            } else if ([primaryViewController isKindOfClass:[UITabBarController class]]) {
-                UITabBarController *tabBarController = (UITabBarController *) primaryViewController;
-                UIViewController *selectedViewController = tabBarController.selectedViewController;
-                if (selectedViewController == self.sourceViewController) {
-                    flag = YES;
-                }
-                if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
-                    UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-                    if (navigationController.topViewController == self.sourceViewController || flag) {
-                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
-                            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-                        } else {
-                            return CGRectZero;
-                        }
-                    }
-                } else if (flag) {
-                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
-                        return [self frameOfViewControllerViewInContainerView:selectedViewController];
-                    } else {
-                        return CGRectZero;
-                    }
-                }
-            }
-            if (!flag && splitViewController.viewControllers.count > 1) {
-                UIViewController *secondaryViewController = [splitViewController.viewControllers lastObject];
-                if (secondaryViewController == self.sourceViewController) {
-                    flag = YES;
-                }
-                if ([secondaryViewController isKindOfClass:[UINavigationController class]]) {
-                    UINavigationController *navigationController = (UINavigationController *) secondaryViewController;
-                    if (navigationController.topViewController == self.sourceViewController || flag) {
-                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
-                            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-                        } else {
-                            return CGRectZero;
-                        }
-                    } else {
-                        return CGRectZero;
-                    }
-                } else if ([secondaryViewController isKindOfClass:[UITabBarController class]]) {
-                    UITabBarController *tabBarController = (UITabBarController *) secondaryViewController;
-                    UIViewController *selectedViewController = tabBarController.selectedViewController;
-                    if (selectedViewController == self.sourceViewController) {
-                        flag = YES;
-                    }
-                    if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
-                        UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-                        if (navigationController.topViewController == self.sourceViewController || flag) {
-                            if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
-                                return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-                            } else {
-                                return CGRectZero;
-                            }
-                        } else {
-                            return CGRectZero;
-                        }
-                    } else if (flag) {
-                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
-                            return [self frameOfViewControllerViewInContainerView:selectedViewController];
-                        } else {
-                            return CGRectZero;
-                        }
-                    } else {
-                        return CGRectZero;
-                    }
-                } else if (flag) {
-                    return [self frameOfViewControllerViewInContainerView:secondaryViewController];
-                } else {
-                    return CGRectZero;
-                }
-            } else {
-                return CGRectZero;
-            }
-        }
-    } else if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController *) self.presentingViewController;
-        if (navigationController.topViewController == self.sourceViewController || flag) {
-            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
-        } else {
-            return CGRectZero;
-        }
-    } else if ([self.presentingViewController isKindOfClass:[UITabBarController class]]) {
-        UITabBarController *tabBarController = (UITabBarController *) self.presentingViewController;
-        UIViewController *selectedViewController = tabBarController.selectedViewController;
-        if (selectedViewController == self.sourceViewController) {
+    CGRect (^func)(UIViewController *, BOOL);
+    CGRect __weak __block (^weak_func)(UIViewController *, BOOL) = func = ^CGRect (UIViewController *viewController, BOOL flag) {
+        if (viewController == self.sourceViewController) {
             flag = YES;
         }
-        if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
-            UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-            if (navigationController.topViewController == self.sourceViewController || flag) {
-                return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+        if ([viewController isKindOfClass:[UISplitViewController class]]) {
+            UISplitViewController *splitViewController = (UISplitViewController *) viewController;
+            if (splitViewController.isCollapsed) {
+                UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+                return weak_func(primaryViewController, flag);
+            } else {
+                UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+                CGRect primaryViewFrame = weak_func(primaryViewController, flag);
+                if (!CGRectEqualToRect(primaryViewFrame, CGRectZero)) {
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
+                        return primaryViewFrame;
+                    } else {
+                        return CGRectZero;
+                    }
+                } else {
+                    UIViewController *secondaryViewController = [splitViewController.viewControllers lastObject];
+                    CGRect secondaryViewFrame = weak_func(secondaryViewController, flag);
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
+                        return secondaryViewFrame;
+                    } else {
+                        return CGRectZero;
+                    }
+                }
+            }
+        } else if ([viewController isKindOfClass:[UITabBarController class]]) {
+            UITabBarController *tabBarController = (UITabBarController *) viewController;
+            UIViewController *selectedViewController = tabBarController.selectedViewController;
+            return weak_func(selectedViewController, flag);
+        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController *) viewController;
+            UIViewController *topViewController = navigationController.topViewController;
+            return weak_func(topViewController, flag);
+        } else {
+            if (flag) {
+                CGRect viewControllerViewFrame = viewController.view.bounds;
+                viewControllerViewFrame.origin.y += viewController.topLayoutGuide.length;
+                viewControllerViewFrame.size.height -= viewController.topLayoutGuide.length;
+                CGRect frameInContainerView = [self.containerView convertRect:viewControllerViewFrame fromCoordinateSpace:viewController.view];
+                return frameInContainerView;
             } else {
                 return CGRectZero;
             }
-        } else if (flag) {
-            return [self frameOfViewControllerViewInContainerView:selectedViewController];
-        } else {
-            return CGRectZero;
         }
-    } else if (flag) {
-        return [self frameOfViewControllerViewInContainerView:self.presentingViewController];
-    } else {
-        return CGRectZero;
-    }
+    };
+    return func(self.presentingViewController, NO);
 }
 
 - (CGRect)frameOfInnerClipViewInOuterClipView:(BOOL)visible {
@@ -424,6 +298,7 @@ static const NSTimeInterval MSTDropDownAnimationControllerDefaultAnimationDurati
         }
     }
     [containerView addSubview:presentedController.view];
+    presentedController.view.frame = CGRectMake(0, 0, containerView.bounds.size.width, containerView.bounds.size.height);
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:1.0 initialSpringVelocity:0 options:0 animations:^{
         // Perform Presentation Animation...
     } completion:^(BOOL finished) {
