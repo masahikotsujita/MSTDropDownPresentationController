@@ -8,13 +8,55 @@
 
 #import "MSTDropDownPresentationController.h"
 
-static const NSInteger MSTDropDownPresentationControllerOverlayViewTag = 101;
-static const NSInteger MSTDropDownPresentationControllerPresentedViewMaskViewTag = 102;
+static const NSInteger MSTDropDownPresentationControllerTapGestureRecognitionViewTag = 101;
+static const NSInteger MSTDropDownPresentationControllerTopEdgeClipViewTag = 102;
+static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag = 103;
+
+@interface MSTRoundedCornerView : UIView
+
+@property (assign, nonatomic) CGFloat cornerRadius;
+
+@end
+
+@implementation MSTRoundedCornerView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        UIView *maskView = [[UIView alloc] initWithFrame:frame];
+        maskView.backgroundColor = [UIColor whiteColor];
+        maskView.frame = CGRectMake(0, -frame.size.height, frame.size.width, frame.size.height * 2);
+        self.maskView = maskView;
+        self.backgroundColor = [UIColor clearColor];
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        self.cornerRadius = 15;
+    }
+    return self;
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    self.maskView.layer.cornerRadius = _cornerRadius;
+}
+
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+    self.maskView.frame = CGRectMake(0, -frame.size.height, frame.size.width, frame.size.height * 2);
+}
+
+@end
+
+@interface MSTDropDownPresentationController ()
+
+@property (nonatomic, readonly) UIViewController *sourceViewController;
+
+@end
 
 @implementation MSTDropDownPresentationController {
     UIView *_backgroundView;
-    UIView *_overlayView;
-    UIView *_presentedViewMaskView;
+    UIView *_tapGestureRecognitionView;
+    UIView *_outerClipView;
+    MSTRoundedCornerView *_innerClipView;
 }
 
 #pragma mark - Initializing MSTDropDownPresentationController Object
@@ -26,60 +68,126 @@ static const NSInteger MSTDropDownPresentationControllerPresentedViewMaskViewTag
         self.layoutMargins = UIEdgeInsetsMake(8, 8, 8, 8);
         self.dismissesOnBackgroundTap = YES;
         self.backgroundAlpha = 0.5;
+        _sourceViewController = presentingViewController;
     }
     return self;
 }
 
-#pragma mark - Getting Total Height of Status Bar and Navigation Bar
+#pragma mark - Calculating View Frames
 
-- (CGFloat)contentViewPresentationOffsetY {
-    if ([self.presentingViewController isKindOfClass:[UITabBarController class]]) {
-        UIViewController *viewController = ((UITabBarController *)self.presentingViewController).selectedViewController;
-        if ([viewController isKindOfClass:[UINavigationController class]]) {
-            return ((UINavigationController *) viewController).topViewController.topLayoutGuide.length;
-        } else {
-            return 0;
+- (CGRect)frameOfOuterClipViewInContainerView {
+    CGRect (^func)(UIViewController *, BOOL);
+    CGRect __weak __block (^weak_func)(UIViewController *, BOOL) = func = ^CGRect (UIViewController *viewController, BOOL flag) {
+        if (viewController == self.sourceViewController) {
+            flag = YES;
         }
-    } else if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
-        return ((UINavigationController *) self.presentingViewController).topViewController.topLayoutGuide.length;
-    } else {
-        return 0;
-    }
+        if ([viewController isKindOfClass:[UISplitViewController class]]) {
+            UISplitViewController *splitViewController = (UISplitViewController *) viewController;
+            if (splitViewController.isCollapsed) {
+                UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+                return weak_func(primaryViewController, flag);
+            } else {
+                UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+                CGRect primaryViewFrame = weak_func(primaryViewController, flag);
+                if (!CGRectEqualToRect(primaryViewFrame, CGRectZero)) {
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
+                        return primaryViewFrame;
+                    } else {
+                        return CGRectZero;
+                    }
+                } else {
+                    UIViewController *secondaryViewController = [splitViewController.viewControllers lastObject];
+                    CGRect secondaryViewFrame = weak_func(secondaryViewController, flag);
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
+                        return secondaryViewFrame;
+                    } else {
+                        return CGRectZero;
+                    }
+                }
+            }
+        } else if ([viewController isKindOfClass:[UITabBarController class]]) {
+            UITabBarController *tabBarController = (UITabBarController *) viewController;
+            UIViewController *selectedViewController = tabBarController.selectedViewController;
+            return weak_func(selectedViewController, flag);
+        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController *) viewController;
+            UIViewController *topViewController = navigationController.topViewController;
+            return weak_func(topViewController, flag);
+        } else {
+            if (flag) {
+                CGRect viewControllerViewFrame = viewController.view.bounds;
+                viewControllerViewFrame.origin.y += viewController.topLayoutGuide.length;
+                viewControllerViewFrame.size.height -= viewController.topLayoutGuide.length;
+                CGRect frameInContainerView = [self.containerView convertRect:viewControllerViewFrame fromCoordinateSpace:viewController.view];
+                return frameInContainerView;
+            } else {
+                return CGRectZero;
+            }
+        }
+    };
+    return func(self.presentingViewController, NO);
+}
+
+- (CGRect)frameOfInnerClipViewInOuterClipView:(BOOL)visible {
+    CGRect containerFrame = [self frameOfOuterClipViewInContainerView];
+    CGRect frame = CGRectZero;
+    CGSize preferredSize = self.presentedViewController.preferredContentSize;
+    UIEdgeInsets margins = self.layoutMargins;
+    frame.size = CGSizeMake(MIN(containerFrame.size.width - (margins.left + margins.right), preferredSize.width), MIN(containerFrame.size.height - margins.bottom, preferredSize.height));
+    frame.origin.x = (containerFrame.size.width - frame.size.width) / 2;
+    frame.origin.y = visible ? 0 : -frame.size.height;
+    return frame;
 }
 
 #pragma mark - Tracking the Transition’s Start and End
 
 - (void)presentationTransitionWillBegin {
-    CGFloat barHeight = [self contentViewPresentationOffsetY];
-    _backgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, barHeight, self.containerView.bounds.size.width, self.containerView.bounds.size.height - barHeight)];
-    _backgroundView.backgroundColor = [UIColor blackColor];
-    _backgroundView.alpha = 0.0;
-    [self.containerView addSubview:_backgroundView];
+    // Background View
+    UIView *backgroundView = [[UIView alloc] initWithFrame:[self frameOfOuterClipViewInContainerView]];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    backgroundView.backgroundColor = [UIColor blackColor];
+    backgroundView.alpha = 0.0;
+    [self.containerView addSubview:backgroundView];
+    _backgroundView = backgroundView;
 
-    _overlayView = [[UIView alloc] initWithFrame:self.containerView.bounds];
-    _overlayView.maskView = [[UIView alloc] initWithFrame:CGRectMake(0, barHeight, self.containerView.bounds.size.width, self.containerView.bounds.size.height - barHeight)];
-    _overlayView.maskView.backgroundColor = [UIColor blackColor];
-    _overlayView.backgroundColor = [UIColor clearColor];
-    _overlayView.tag = MSTDropDownPresentationControllerOverlayViewTag;
+    // Tap Gesture Recognition View
+    UIView *tapGestureRecognitionView = [[UIView alloc] init];
+    tapGestureRecognitionView.translatesAutoresizingMaskIntoConstraints = NO;
+    tapGestureRecognitionView.backgroundColor = [UIColor clearColor];
+    tapGestureRecognitionView.tag = MSTDropDownPresentationControllerTapGestureRecognitionViewTag;
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTouchOverlayView:)];
     gestureRecognizer.delegate = self;
-    [_overlayView addGestureRecognizer:gestureRecognizer];
-    [self.containerView insertSubview:_overlayView aboveSubview:_backgroundView];
+    [tapGestureRecognitionView addGestureRecognizer:gestureRecognizer];
+    [self.containerView insertSubview:tapGestureRecognitionView aboveSubview:backgroundView];
+    _tapGestureRecognitionView = tapGestureRecognitionView;
 
-    CGSize contentViewSize = [self sizeForChildContentContainer:self.presentedViewController withParentContainerSize:self.containerView.bounds.size];
-    _presentedViewMaskView = [[UIView alloc] initWithFrame:CGRectMake((self.containerView.bounds.size.width - contentViewSize.width) / 2, barHeight - contentViewSize.height, contentViewSize.width, contentViewSize.height)];
-    _presentedViewMaskView.backgroundColor = [UIColor clearColor];
-    _presentedViewMaskView.maskView = [[UIView alloc] initWithFrame:CGRectMake(0, -contentViewSize.height, contentViewSize.width, contentViewSize.height * 2)];
-    _presentedViewMaskView.maskView.backgroundColor = [UIColor blackColor];
-    _presentedViewMaskView.maskView.layer.cornerRadius = self.cornerRadius;
-    _presentedViewMaskView.tag = MSTDropDownPresentationControllerPresentedViewMaskViewTag;
-    [_overlayView addSubview:_presentedViewMaskView];
+    // Top Edge Clip View
+    UIView *outerClipView = [[UIView alloc] initWithFrame:[self frameOfOuterClipViewInContainerView]];
+    outerClipView.userInteractionEnabled = YES;
+    outerClipView.backgroundColor = [UIColor clearColor];
+    outerClipView.clipsToBounds = YES;
+    outerClipView.tag = MSTDropDownPresentationControllerTopEdgeClipViewTag;
+    gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTouchOverlayView:)];
+    gestureRecognizer.delegate = self;
+    [outerClipView addGestureRecognizer:gestureRecognizer];
+    [self.containerView insertSubview:outerClipView aboveSubview:tapGestureRecognitionView];
+    _outerClipView = outerClipView;
 
+    // Rounded Corner Clip View
+    MSTRoundedCornerView *innerClipView = [[MSTRoundedCornerView alloc] initWithFrame:[self frameOfInnerClipViewInOuterClipView:NO]];
+    innerClipView.tag = MSTDropDownPresentationControllerRoundedCornerClipViewTag;
+    [outerClipView addSubview:innerClipView];
+    _innerClipView = innerClipView;
+
+    // Add Constraints
+    NSDictionary *views = NSDictionaryOfVariableBindings(tapGestureRecognitionView);
+    [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
+    [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
+
+    // Animate in view transition
     [self.presentedViewController.transitionCoordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
         _backgroundView.alpha = self.backgroundAlpha;
-        CGRect frame = _presentedViewMaskView.frame;
-        frame.origin.y += _presentedViewMaskView.bounds.size.height;
-        _presentedViewMaskView.frame = frame;
+        _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:YES];
     } completion:NULL];
 }
 
@@ -90,55 +198,63 @@ static const NSInteger MSTDropDownPresentationControllerPresentedViewMaskViewTag
 - (void)dismissalTransitionWillBegin {
     [self.presentedViewController.transitionCoordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
         _backgroundView.alpha = 0.0;
-        CGRect frame = _presentedViewMaskView.frame;
-        frame.origin.y -= _presentedViewMaskView.bounds.size.height;
-        _presentedViewMaskView.frame = frame;
+        _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:NO];
     } completion:NULL];
 }
 
 - (void)dismissalTransitionDidEnd:(BOOL)completed {
     if (completed) {
         [_backgroundView removeFromSuperview];
-        [_overlayView removeFromSuperview];
+        [_tapGestureRecognitionView removeFromSuperview];
     }
 }
 
-#pragma mark - Responding to Changes in Child View Controllers
+#pragma mark - Adjusting the Size and Layout of the Presentation
 
 - (CGSize)sizeForChildContentContainer:(id <UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
-    CGFloat barHeight = [self contentViewPresentationOffsetY];
-    UIEdgeInsets margins = self.layoutMargins;
-    CGSize size = CGSizeMake(MIN(parentSize.width - (margins.left + margins.right), container.preferredContentSize.width), MIN(parentSize.height - (barHeight + margins.bottom), container.preferredContentSize.height));
-    return size;
+    return [self frameOfInnerClipViewInOuterClipView:YES].size;
 }
 
 - (CGRect)frameOfPresentedViewInContainerView {
-    CGFloat barHeight = [self contentViewPresentationOffsetY];
-    CGSize size = [self sizeForChildContentContainer:self.presentedViewController withParentContainerSize:self.presentingViewController.view.bounds.size];
-    CGRect frame = CGRectMake((self.containerView.bounds.size.width - size.width) / 2, barHeight, size.width, size.height);
-    return frame;
+    return [self.containerView convertRect:[self frameOfInnerClipViewInOuterClipView:YES] fromView:_innerClipView];
 }
 
 - (void)containerViewWillLayoutSubviews {
-    CGFloat barHeight = [self contentViewPresentationOffsetY];
-    _backgroundView.frame = CGRectMake(0, barHeight, self.containerView.bounds.size.width, self.containerView.bounds.size.height - barHeight);
-    _overlayView.frame = self.containerView.bounds;
-    _overlayView.maskView.frame = CGRectMake(0, barHeight, self.containerView.bounds.size.width, self.containerView.bounds.size.height - barHeight);
-    CGRect presentedViewFrame = self.frameOfPresentedViewInContainerView;
-    _presentedViewMaskView.frame = presentedViewFrame;
-    _presentedViewMaskView.maskView.frame = CGRectMake(0, -presentedViewFrame.size.height, presentedViewFrame.size.width, presentedViewFrame.size.height * 2);
-    self.presentedView.frame = CGRectMake(0, 0, presentedViewFrame.size.width, presentedViewFrame.size.height);
+
 }
 
 - (void)containerViewDidLayoutSubviews {
-    // Do something when subviews layout ended...
+
+}
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
+    UISplitViewController *splitViewController = [self.presentingViewController isKindOfClass:[UISplitViewController class]] ? (UISplitViewController *)self.presentingViewController : nil;
+    BOOL hidesWhileTransition = splitViewController != nil && !((UISplitViewController *)self.presentingViewController).isCollapsed;
+    _backgroundView.hidden = _outerClipView.hidden = hidesWhileTransition;
+    BOOL __block dismissesAfterTransition = NO;
+    [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+        CGRect outerClipViewFrame = [self frameOfOuterClipViewInContainerView];
+        CGRect innerClipViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
+        if (CGRectEqualToRect(outerClipViewFrame, CGRectZero)) {
+            dismissesAfterTransition = YES;
+        }
+        _backgroundView.frame = outerClipViewFrame;
+        _outerClipView.frame = outerClipViewFrame;
+        _innerClipView.frame = innerClipViewFrame;
+        self.presentedView.frame = CGRectMake(0, 0, innerClipViewFrame.size.width, innerClipViewFrame.size.height);
+    } completion:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+        _backgroundView.hidden = _outerClipView.hidden = NO;
+        if (dismissesAfterTransition) {
+            [self.presentingViewController dismissViewControllerAnimated:NO completion:NULL];
+        }
+    }];
 }
 
 #pragma mark - Responding to Dismissing Tap Gestures
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     // Ignore content-view-through touch
-    return touch.view == _overlayView;
+    return touch.view == _tapGestureRecognitionView || touch.view == _outerClipView;
 }
 
 - (void)didTouchOverlayView:(UITapGestureRecognizer *)gestureRecognizer {
@@ -174,14 +290,15 @@ static const NSTimeInterval MSTDropDownAnimationControllerDefaultAnimationDurati
 - (void)animatePresentTransition:(id <UIViewControllerContextTransitioning>)transitionContext {
     UIViewController *presentedController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     UIView *containerView = transitionContext.containerView;
-    UIView *overlayView = [transitionContext.containerView viewWithTag:MSTDropDownPresentationControllerOverlayViewTag];
-    if (overlayView) {
-        UIView *maskView = [overlayView viewWithTag:MSTDropDownPresentationControllerPresentedViewMaskViewTag];
-        if (maskView) {
-            containerView = maskView;
+    UIView *topEdgeClipView = [transitionContext.containerView viewWithTag:MSTDropDownPresentationControllerTopEdgeClipViewTag];
+    if (topEdgeClipView) {
+        UIView *roundedCornerClipView = [topEdgeClipView viewWithTag:MSTDropDownPresentationControllerRoundedCornerClipViewTag];
+        if (roundedCornerClipView) {
+            containerView = roundedCornerClipView;
         }
     }
     [containerView addSubview:presentedController.view];
+    presentedController.view.frame = CGRectMake(0, 0, containerView.bounds.size.width, containerView.bounds.size.height);
     [UIView animateWithDuration:[self transitionDuration:transitionContext] delay:0.0 usingSpringWithDamping:1.0 initialSpringVelocity:0 options:0 animations:^{
         // Perform Presentation Animation...
     } completion:^(BOOL finished) {
