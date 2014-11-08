@@ -1,7 +1,7 @@
 MSTDropDownPresentationController
 ====================
 
-[![CI Status](http://img.shields.io/travis/Masahiko Tsujita/MSTDropDownPresentationController.svg?style=flat)](https://travis-ci.org/Masahiko Tsujita/MSTDropDownPresentationController)
+[![CI Status](http://img.shields.io/travis/masahikot/MSTDropDownPresentationController.svg?style=flat)](https://travis-ci.org/Masahiko Tsujita/MSTDropDownPresentationController)
 [![Version](https://img.shields.io/cocoapods/v/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
 [![License](https://img.shields.io/cocoapods/l/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
 [![Platform](https://img.shields.io/cocoapods/p/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
