@@ -7,12 +7,26 @@
 //
 
 #import "MSTAppDelegate.h"
+#import "MSTMasterViewController.h"
+#import "MSTDetailViewController.h"
+
+@interface MSTAppDelegate () <UISplitViewControllerDelegate>
+
+@end
 
 @implementation MSTAppDelegate
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    // Override point for customization after application launch.
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if ([self.window.rootViewController isKindOfClass:[UISplitViewController class]]) {
+        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+        splitViewController.delegate = self;
+        splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+        UIViewController *viewController = [splitViewController.viewControllers lastObject];
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController *) viewController;
+            navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
+        }
+    }
     return YES;
 }
 							
@@ -41,6 +55,12 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+#pragma mark - Split view
+
+- (BOOL)splitViewController:(UISplitViewController *)splitViewController collapseSecondaryViewController:(UIViewController *)secondaryViewController ontoPrimaryViewController:(UIViewController *)primaryViewController {
+    return [secondaryViewController isKindOfClass:[UINavigationController class]] && [[(UINavigationController *)secondaryViewController topViewController] isKindOfClass:[MSTDetailViewController class]] && ([(MSTDetailViewController *)[(UINavigationController *)secondaryViewController topViewController] detailItem] == nil);
 }
 
 @end

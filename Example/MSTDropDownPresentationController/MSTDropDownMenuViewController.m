@@ -1,21 +1,22 @@
 //
-//  MSTActionsViewController.m
+//  MSTDropDownMenuViewController.m
 //  MSTDropDownPresentationController
 //
 //  Created by Masahiko Tsujita on 2014/11/01.
 //  Copyright (c) 2014年 Masahiko Tsujita. All rights reserved.
 //
 
-#import "MSTActionsViewController.h"
+#import "MSTDropDownMenuViewController.h"
 
-@interface MSTActionsViewController ()
+@interface MSTDropDownMenuViewController ()
 
 @end
 
-@implementation MSTActionsViewController
+@implementation MSTDropDownMenuViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.preferredContentSize = CGSizeMake(320, 400);
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
 }
 

@@ -1,7 +1,7 @@
 MSTDropDownPresentationController
 ====================
 
-[![CI Status](http://img.shields.io/travis/Masahiko Tsujita/MSTDropDownPresentationController.svg?style=flat)](https://travis-ci.org/Masahiko Tsujita/MSTDropDownPresentationController)
+[![CI Status](http://img.shields.io/travis/masahikot/MSTDropDownPresentationController.svg?style=flat)](https://travis-ci.org/Masahiko Tsujita/MSTDropDownPresentationController)
 [![Version](https://img.shields.io/cocoapods/v/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
 [![License](https://img.shields.io/cocoapods/l/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
 [![Platform](https://img.shields.io/cocoapods/p/MSTDropDownPresentationController.svg?style=flat)](http://cocoadocs.org/docsets/MSTDropDownPresentationController)
@@ -23,7 +23,8 @@ pod "MSTDropDownPresentationController"
 ```
 
 ## Usage
-###1. Adopt UIViewControllerTransitioningDelegate
+### Using UIViewControllerTransitioningDelegate
+First, adopt UIViewControllerTransitioningDelegate
 ```objective-c
 - (UIPresentationController *)presentationControllerForPresentedViewController:(UIViewController *)presented presentingViewController:(UIViewController *)presenting sourceViewController:(UIViewController *)source {
     return [[MSTDropDownPresentationController alloc] initWithPresentedViewController:presented presentingViewController:presenting];
@@ -37,15 +38,20 @@ pod "MSTDropDownPresentationController"
     return [[MSTDropDownAnimationController alloc] init];
 }
 ```
-###2. Present View Controller with Custom Presentation
+Second, present view controller with custom presentation
 ```objective-c
-- (IBAction)showDropDownViewController:(id)sender {
-    ViewController *viewController = [[ViewController alloc] init];
-    viewController.modalPresentationStyle = UIModalPresentationCustom;
-    viewController.transitioningDelegate = self;
-    [self presentViewController:viewController animated:YES completion:NULL];
-}
+viewController.modalPresentationStyle = UIModalPresentationCustom;
+viewController.transitioningDelegate = self;
+[self presentViewController:viewController animated:YES completion:NULL];
 ```
+### Or, You can get simply Delegate Object as follows:
+```objective-c
+viewController.transitioningDelegate = self.mst_dropDownTransitioningDelegate;
+```
+### Or, You can also use Custom Storyboard Segue Class
+Select "Custom" Segue and specify `MSTDropDownStoryboardSegue` for Segue Class.
+
+![](./CustomStoryboardSegue.png)
 
 ## License
 

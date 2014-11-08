@@ -1,5 +1,5 @@
 //
-//  MSTActionsViewController.h
+//  MSTDropDownMenuViewController.h
 //  MSTDropDownPresentationController
 //
 //  Created by Masahiko Tsujita on 2014/11/01.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MSTActionsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
+@interface MSTDropDownMenuViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
 

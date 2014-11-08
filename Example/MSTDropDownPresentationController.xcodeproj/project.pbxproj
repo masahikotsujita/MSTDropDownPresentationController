@@ -22,9 +22,9 @@
 		AA5F499B4BA98913C4B12FFC /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F19C8BE0318C02416A27489C /* libPods-Tests.a */; };
 		B08AB7DE8EBB8A257521704D /* libPods-MSTDropDownPresentationController.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B0D785B69E1A9021DEA16432 /* libPods-MSTDropDownPresentationController.a */; };
 		D621C4451A08BF74001F37D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D621C43F1A08BF74001F37D0 /* Main.storyboard */; };
-		D621C4461A08BF74001F37D0 /* MSTActionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4411A08BF74001F37D0 /* MSTActionsViewController.m */; };
-		D621C4471A08BF74001F37D0 /* MSTActionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D621C4421A08BF74001F37D0 /* MSTActionsViewController.xib */; };
-		D621C4481A08BF74001F37D0 /* MSTDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4441A08BF74001F37D0 /* MSTDemoViewController.m */; };
+		D621C4461A08BF74001F37D0 /* MSTDropDownMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */; };
+		D621C4481A08BF74001F37D0 /* MSTMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */; };
+		D6C6B1BC1A08FC8B003EEE90 /* MSTDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,11 +64,12 @@
 		B0D785B69E1A9021DEA16432 /* libPods-MSTDropDownPresentationController.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSTDropDownPresentationController.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C5382D013D342D9602B6FA27 /* Pods-MSTDropDownPresentationController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSTDropDownPresentationController.release.xcconfig"; path = "Pods/Target Support Files/Pods-MSTDropDownPresentationController/Pods-MSTDropDownPresentationController.release.xcconfig"; sourceTree = "<group>"; };
 		D621C43F1A08BF74001F37D0 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		D621C4401A08BF74001F37D0 /* MSTActionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTActionsViewController.h; sourceTree = "<group>"; };
-		D621C4411A08BF74001F37D0 /* MSTActionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTActionsViewController.m; sourceTree = "<group>"; };
-		D621C4421A08BF74001F37D0 /* MSTActionsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MSTActionsViewController.xib; sourceTree = "<group>"; };
-		D621C4431A08BF74001F37D0 /* MSTDemoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDemoViewController.h; sourceTree = "<group>"; };
-		D621C4441A08BF74001F37D0 /* MSTDemoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDemoViewController.m; sourceTree = "<group>"; };
+		D621C4401A08BF74001F37D0 /* MSTDropDownMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDropDownMenuViewController.h; sourceTree = "<group>"; };
+		D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDropDownMenuViewController.m; sourceTree = "<group>"; };
+		D621C4431A08BF74001F37D0 /* MSTMasterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTMasterViewController.h; sourceTree = "<group>"; };
+		D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTMasterViewController.m; sourceTree = "<group>"; };
+		D6C6B1BA1A08FC8B003EEE90 /* MSTDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDetailViewController.h; sourceTree = "<group>"; };
+		D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDetailViewController.m; sourceTree = "<group>"; };
 		F19C8BE0318C02416A27489C /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -138,11 +139,12 @@
 				6003F59C195388D20070C39A /* MSTAppDelegate.h */,
 				6003F59D195388D20070C39A /* MSTAppDelegate.m */,
 				D621C43F1A08BF74001F37D0 /* Main.storyboard */,
-				D621C4401A08BF74001F37D0 /* MSTActionsViewController.h */,
-				D621C4411A08BF74001F37D0 /* MSTActionsViewController.m */,
-				D621C4421A08BF74001F37D0 /* MSTActionsViewController.xib */,
-				D621C4431A08BF74001F37D0 /* MSTDemoViewController.h */,
-				D621C4441A08BF74001F37D0 /* MSTDemoViewController.m */,
+				D621C4431A08BF74001F37D0 /* MSTMasterViewController.h */,
+				D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */,
+				D6C6B1BA1A08FC8B003EEE90 /* MSTDetailViewController.h */,
+				D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */,
+				D621C4401A08BF74001F37D0 /* MSTDropDownMenuViewController.h */,
+				D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
 			);
@@ -282,7 +284,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D621C4451A08BF74001F37D0 /* Main.storyboard in Resources */,
-				D621C4471A08BF74001F37D0 /* MSTActionsViewController.xib in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -368,8 +369,9 @@
 			files = (
 				6003F59E195388D20070C39A /* MSTAppDelegate.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
-				D621C4481A08BF74001F37D0 /* MSTDemoViewController.m in Sources */,
-				D621C4461A08BF74001F37D0 /* MSTActionsViewController.m in Sources */,
+				D621C4481A08BF74001F37D0 /* MSTMasterViewController.m in Sources */,
+				D621C4461A08BF74001F37D0 /* MSTDropDownMenuViewController.m in Sources */,
+				D6C6B1BC1A08FC8B003EEE90 /* MSTDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
