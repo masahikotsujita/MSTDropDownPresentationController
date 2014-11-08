@@ -319,7 +319,7 @@ static const NSTimeInterval MSTDropDownAnimationControllerDefaultAnimationDurati
 
 @end
 
-static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransitioningDelgateAssociationKey;
+static void *MSTDropDownTransitioningDelegateAssociationKey = &MSTDropDownTransitioningDelegateAssociationKey;
 
 @interface MSTDropDownTransitioningDelegateObject : NSObject <UIViewControllerTransitioningDelegate>
 
@@ -347,10 +347,10 @@ static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransit
 @implementation UIViewController (MSTDropDownPresentationControllerSupport)
 
 - (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate {
-    id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey);
+    id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelegateAssociationKey);
     if (!object) {
         object = [[MSTDropDownTransitioningDelegateObject alloc] init];
-        objc_setAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, MSTDropDownTransitioningDelegateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return object;
 }
