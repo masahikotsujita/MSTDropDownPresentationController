@@ -195,7 +195,7 @@
                 </label>
                 <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Tcm-Ut-Qeh">
                     <connections>
-                        <action selector="didLongPressTitleView:" destination="b7T-Eg-Irg" id="J5h-Pj-CXG"/>
+                        <action selector="didLongPressTitleLabel:" destination="b7T-Eg-Irg" id="J5h-Pj-CXG"/>
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
