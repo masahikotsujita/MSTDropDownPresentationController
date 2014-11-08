@@ -38,4 +38,10 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)didLongPressTitleLabel:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [self performSegueWithIdentifier:@"DropDownSegue" sender:sender];
+    }
+}
+
 @end

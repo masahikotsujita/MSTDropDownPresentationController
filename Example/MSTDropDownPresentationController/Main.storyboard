@@ -4,10 +4,11 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
+        <!--Item-->
         <scene sceneID="T8z-bl-9Ft">
             <objects>
                 <navigationController id="0sV-zi-YI9" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="gip-X0-LVK"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="HTQ-Js-Uw5">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -25,18 +26,19 @@
             <objects>
                 <splitViewController id="7E1-z7-atq" sceneMemberID="viewController">
                     <connections>
-                        <segue destination="Fc4-MN-2LA" kind="relationship" relationship="detailViewController" id="Yfx-lY-vOT"/>
-                        <segue destination="0sV-zi-YI9" kind="relationship" relationship="masterViewController" id="cnH-HO-ifN"/>
+                        <segue destination="Fc4-MN-2LA" kind="relationship" relationship="detailViewController" id="rwe-h7-Mj0"/>
+                        <segue destination="0sV-zi-YI9" kind="relationship" relationship="masterViewController" id="PEf-gP-RN2"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="e9k-7k-n1N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-815" y="549"/>
+            <point key="canvasLocation" x="-1591" y="545"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Item-->
         <scene sceneID="vzq-iY-rtJ">
             <objects>
                 <navigationController id="Fc4-MN-2LA" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="NE2-Fm-TLM"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="fmD-y1-BjI">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -49,7 +51,7 @@
             </objects>
             <point key="canvasLocation" x="5" y="949"/>
         </scene>
-        <!--Detail View Controller-->
+        <!--Item-->
         <scene sceneID="f1M-xX-Cfo">
             <objects>
                 <viewController id="vGq-uD-Pge" customClass="MSTDetailViewController" sceneMemberID="viewController">
@@ -74,12 +76,32 @@
                             <constraint firstAttribute="centerY" secondItem="7Gs-Iq-e3E" secondAttribute="centerY" id="jvk-NQ-zxy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="F0k-JB-sAL"/>
+                    <tabBarItem key="tabBarItem" title="Item" id="qtb-mt-sYL"/>
+                    <navigationItem key="navigationItem" id="F0k-JB-sAL">
+                        <connections>
+                            <outlet property="titleView" destination="67P-s9-cXp" id="ubN-g6-MNr"/>
+                        </connections>
+                    </navigationItem>
                     <connections>
                         <outlet property="detailDescriptionLabel" destination="7Gs-Iq-e3E" id="FYR-f5-vFk"/>
+                        <segue destination="zhx-TX-gU9" kind="custom" identifier="DropDownSegue" customClass="MSTDropDownStoryboardSegue" id="rxo-p2-qSv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="t0V-sD-WYN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Long Press Me" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="67P-s9-cXp">
+                    <rect key="frame" x="0.0" y="0.0" width="42" height="21"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <nil key="highlightedColor"/>
+                    <connections>
+                        <outletCollection property="gestureRecognizers" destination="Ehi-F1-8RX" appends="YES" id="J9o-Fc-AL3"/>
+                    </connections>
+                </label>
+                <pongPressGestureRecognizer allowableMovement="10" minimumPressDuration="0.5" id="Ehi-F1-8RX">
+                    <connections>
+                        <action selector="didLongPressTitleLabel:" destination="vGq-uD-Pge" id="98e-kn-cPh"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="833" y="949"/>
         </scene>
@@ -108,7 +130,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="Fc4-MN-2LA" kind="showDetail" identifier="ShowDetail" id="kfO-S5-PSg"/>
+                                            <segue destination="Fc4-MN-2LA" kind="showDetail" id="Sk9-Ux-jKR"/>
                                         </connections>
                                     </tableViewCell>
                                 </cells>
@@ -129,7 +151,7 @@
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ug0-a4-gsO" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Long Press Me" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1bU-j4-Ctc">
+                <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Long Press Me" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="1bU-j4-Ctc">
                     <rect key="frame" x="0.0" y="0.0" width="42" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
@@ -194,7 +216,6 @@
                         </view>
                         <blurEffect style="dark"/>
                     </visualEffectView>
-                    <value key="contentSizeForViewInPopover" type="size" width="320" height="400"/>
                     <connections>
                         <outlet property="tableView" destination="kuA-Ut-eRV" id="g2c-vW-UdA"/>
                     </connections>
@@ -205,6 +226,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Yfx-lY-vOT"/>
+        <segue reference="CtR-Cz-JnD"/>
+        <segue reference="Sk9-Ux-jKR"/>
     </inferredMetricsTieBreakers>
 </document>

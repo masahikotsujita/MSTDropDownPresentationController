@@ -18,12 +18,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.detailViewController = (MSTDetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
-}
-
-- (IBAction)didLongPressTitleView:(UILongPressGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        [self performSegueWithIdentifier:@"DropDownSegue" sender:sender];
+    if ([[self.splitViewController.viewControllers lastObject] isKindOfClass:[UINavigationController class]]) {
+        self.detailViewController = (MSTDetailViewController *)[[self.splitViewController.viewControllers lastObject] topViewController];
     }
 }
 
@@ -31,10 +27,21 @@
     if ([segue.identifier isEqualToString:@"DropDownSegue"]) {
         
     } else {
-        MSTDetailViewController *controller = (MSTDetailViewController *)[segue.destinationViewController topViewController];
+        MSTDetailViewController *controller;
+        if ([segue.destinationViewController isKindOfClass:[UINavigationController class]]) {
+            controller = (MSTDetailViewController *)[segue.destinationViewController topViewController];
+        } else {
+            controller = segue.destinationViewController;
+        }
         controller.detailItem = [[NSDate date] description];
         controller.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
         controller.navigationItem.leftItemsSupplementBackButton = YES;
+    }
+}
+
+- (IBAction)didLongPressTitleView:(UILongPressGestureRecognizer *)sender {
+    if (sender.state == UIGestureRecognizerStateBegan) {
+        [self performSegueWithIdentifier:@"DropDownSegue" sender:sender];
     }
 }
 

@@ -46,12 +46,17 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 
 @end
 
+@interface MSTDropDownPresentationController ()
+
+@property (nonatomic, readonly) UIViewController *sourceViewController;
+
+@end
+
 @implementation MSTDropDownPresentationController {
     UIView *_backgroundView;
     UIView *_tapGestureRecognitionView;
     UIView *_outerClipView;
     MSTRoundedCornerView *_innerClipView;
-    UIViewController *_contextualViewController;
 }
 
 #pragma mark - Initializing MSTDropDownPresentationController Object
@@ -63,95 +68,189 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
         self.layoutMargins = UIEdgeInsetsMake(8, 8, 8, 8);
         self.dismissesOnBackgroundTap = YES;
         self.backgroundAlpha = 0.5;
-        _contextualViewController = presentingViewController;
+        _sourceViewController = presentingViewController;
     }
     return self;
 }
 
 #pragma mark - Calculating View Frames
 
+- (CGRect)frameOfViewControllerViewInContainerView:(UIViewController *)viewController {
+    CGRect frameInViewControllerView = viewController.view.bounds;
+    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
+    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
+    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
+    return frameInContainerView;
+}
+
 - (CGRect)frameOfOuterClipViewInContainerView {
+    BOOL flag = NO;
+    if (self.presentingViewController == self.sourceViewController) {
+        flag = YES;
+    }
     if ([self.presentingViewController isKindOfClass:[UISplitViewController class]]) {
         UISplitViewController *splitViewController = (UISplitViewController *)self.presentingViewController;
-        UIViewController *viewController;
-        if (!splitViewController.isCollapsed) {
+        if (splitViewController.isCollapsed) {
             UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+            if (primaryViewController == self.sourceViewController) {
+                flag = YES;
+            }
             if ([primaryViewController isKindOfClass:[UITabBarController class]]) {
                 UITabBarController *tabBarController = (UITabBarController *) primaryViewController;
                 UIViewController *selectedViewController = tabBarController.selectedViewController;
+                if (selectedViewController == self.sourceViewController) {
+                    flag = YES;
+                }
                 if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
                     UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-                    viewController = navigationController.topViewController;
+                    if (navigationController.topViewController == self.sourceViewController || flag) {
+                        return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+                    } else {
+                        return CGRectZero;
+                    }
                 } else {
-                    viewController = selectedViewController;
+                    return [self frameOfViewControllerViewInContainerView:selectedViewController];
                 }
             } else if ([primaryViewController isKindOfClass:[UINavigationController class]]) {
                 UINavigationController *navigationController = (UINavigationController *) primaryViewController;
-                viewController = navigationController.topViewController;
-            } else {
-                viewController = primaryViewController;
-            }
-            if (viewController == _contextualViewController) {
-                // Primary
-                if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
-                    CGRect frameInViewControllerView = viewController.view.bounds;
-                    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-                    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-                    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-                    return frameInContainerView;
+                UIViewController *topViewController = navigationController.topViewController;
+                if (topViewController == self.sourceViewController) {
+                    flag = YES;
+                }
+                if ([topViewController isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navigationControllerInNavigationController = (UINavigationController *) topViewController;
+                    if (navigationControllerInNavigationController.topViewController == self.sourceViewController || flag) {
+                        return [self frameOfViewControllerViewInContainerView:navigationControllerInNavigationController.topViewController];
+                    } else {
+                        return CGRectZero;
+                    }
+                } else if (flag) {
+                    return [self frameOfViewControllerViewInContainerView:topViewController];
                 } else {
                     return CGRectZero;
                 }
+            } else if (flag) {
+                return [self frameOfViewControllerViewInContainerView:primaryViewController];
             } else {
-                // Detail
-                if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
-                    CGRect frameInViewControllerView = viewController.view.bounds;
-                    frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-                    frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-                    CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-                    return frameInContainerView;
-                } else {
-                    return CGRectZero;
-                }
+                return CGRectZero;
             }
         } else {
-            viewController = _contextualViewController;
-            CGRect frameInViewControllerView = viewController.view.bounds;
-            frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-            frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-            CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-            return frameInContainerView;
+            UIViewController *primaryViewController = [splitViewController.viewControllers firstObject];
+            if (primaryViewController == self.sourceViewController) {
+                flag = YES;
+            }
+            if ([primaryViewController isKindOfClass:[UINavigationController class]]) {
+                UINavigationController *navigationController = (UINavigationController *) primaryViewController;
+                if (navigationController.topViewController == self.sourceViewController || flag) {
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
+                        return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+                    } else {
+                        return CGRectZero;
+                    }
+                }
+            } else if ([primaryViewController isKindOfClass:[UITabBarController class]]) {
+                UITabBarController *tabBarController = (UITabBarController *) primaryViewController;
+                UIViewController *selectedViewController = tabBarController.selectedViewController;
+                if (selectedViewController == self.sourceViewController) {
+                    flag = YES;
+                }
+                if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navigationController = (UINavigationController *) selectedViewController;
+                    if (navigationController.topViewController == self.sourceViewController || flag) {
+                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
+                            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+                        } else {
+                            return CGRectZero;
+                        }
+                    }
+                } else if (flag) {
+                    if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryOverlay) {
+                        return [self frameOfViewControllerViewInContainerView:selectedViewController];
+                    } else {
+                        return CGRectZero;
+                    }
+                }
+            }
+            if (!flag && splitViewController.viewControllers.count > 1) {
+                UIViewController *secondaryViewController = [splitViewController.viewControllers lastObject];
+                if (secondaryViewController == self.sourceViewController) {
+                    flag = YES;
+                }
+                if ([secondaryViewController isKindOfClass:[UINavigationController class]]) {
+                    UINavigationController *navigationController = (UINavigationController *) secondaryViewController;
+                    if (navigationController.topViewController == self.sourceViewController || flag) {
+                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
+                            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+                        } else {
+                            return CGRectZero;
+                        }
+                    } else {
+                        return CGRectZero;
+                    }
+                } else if ([secondaryViewController isKindOfClass:[UITabBarController class]]) {
+                    UITabBarController *tabBarController = (UITabBarController *) secondaryViewController;
+                    UIViewController *selectedViewController = tabBarController.selectedViewController;
+                    if (selectedViewController == self.sourceViewController) {
+                        flag = YES;
+                    }
+                    if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
+                        UINavigationController *navigationController = (UINavigationController *) selectedViewController;
+                        if (navigationController.topViewController == self.sourceViewController || flag) {
+                            if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
+                                return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+                            } else {
+                                return CGRectZero;
+                            }
+                        } else {
+                            return CGRectZero;
+                        }
+                    } else if (flag) {
+                        if (splitViewController.displayMode == UISplitViewControllerDisplayModeAllVisible || splitViewController.displayMode == UISplitViewControllerDisplayModePrimaryHidden) {
+                            return [self frameOfViewControllerViewInContainerView:selectedViewController];
+                        } else {
+                            return CGRectZero;
+                        }
+                    } else {
+                        return CGRectZero;
+                    }
+                } else if (flag) {
+                    return [self frameOfViewControllerViewInContainerView:secondaryViewController];
+                } else {
+                    return CGRectZero;
+                }
+            } else {
+                return CGRectZero;
+            }
+        }
+    } else if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
+        UINavigationController *navigationController = (UINavigationController *) self.presentingViewController;
+        if (navigationController.topViewController == self.sourceViewController || flag) {
+            return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+        } else {
+            return CGRectZero;
         }
     } else if ([self.presentingViewController isKindOfClass:[UITabBarController class]]) {
         UITabBarController *tabBarController = (UITabBarController *) self.presentingViewController;
         UIViewController *selectedViewController = tabBarController.selectedViewController;
-        UIViewController *viewController;
+        if (selectedViewController == self.sourceViewController) {
+            flag = YES;
+        }
         if ([selectedViewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *navigationController = (UINavigationController *) selectedViewController;
-            viewController = navigationController.topViewController;
+            if (navigationController.topViewController == self.sourceViewController || flag) {
+                return [self frameOfViewControllerViewInContainerView:navigationController.topViewController];
+            } else {
+                return CGRectZero;
+            }
+        } else if (flag) {
+            return [self frameOfViewControllerViewInContainerView:selectedViewController];
         } else {
-            viewController = selectedViewController;
+            return CGRectZero;
         }
-        CGRect frameInViewControllerView = viewController.view.bounds;
-        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-        return frameInContainerView;
-    } else if ([self.presentingViewController isKindOfClass:[UINavigationController class]]) {
-        UINavigationController *navigationController = (UINavigationController *) self.presentingViewController;
-        UIViewController *viewController = navigationController.topViewController;
-        CGRect frameInViewControllerView = viewController.view.bounds;
-        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-        return frameInContainerView;
+    } else if (flag) {
+        return [self frameOfViewControllerViewInContainerView:self.presentingViewController];
     } else {
-        UIViewController *viewController = self.presentingViewController;
-        CGRect frameInViewControllerView = viewController.view.bounds;
-        frameInViewControllerView.origin.y += viewController.topLayoutGuide.length;
-        frameInViewControllerView.size.height -= viewController.topLayoutGuide.length;
-        CGRect frameInContainerView = [self.containerView convertRect:frameInViewControllerView fromCoordinateSpace:viewController.view];
-        return frameInContainerView;
+        return CGRectZero;
     }
 }
 
@@ -161,7 +260,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     CGSize preferredSize = self.presentedViewController.preferredContentSize;
     UIEdgeInsets margins = self.layoutMargins;
     frame.size = CGSizeMake(MIN(containerFrame.size.width - (margins.left + margins.right), preferredSize.width), MIN(containerFrame.size.height - margins.bottom, preferredSize.height));
-    frame.origin.x = containerFrame.origin.x + (containerFrame.size.width - frame.size.width) / 2;
+    frame.origin.x = (containerFrame.size.width - frame.size.width) / 2;
     frame.origin.y = visible ? 0 : -frame.size.height;
     return frame;
 }
@@ -189,8 +288,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     _tapGestureRecognitionView = tapGestureRecognitionView;
 
     // Top Edge Clip View
-    CGRect outerClipViewFrame = [self frameOfOuterClipViewInContainerView];
-    UIView *outerClipView = [[UIView alloc] initWithFrame:outerClipViewFrame];
+    UIView *outerClipView = [[UIView alloc] initWithFrame:[self frameOfOuterClipViewInContainerView]];
     outerClipView.userInteractionEnabled = YES;
     outerClipView.backgroundColor = [UIColor clearColor];
     outerClipView.clipsToBounds = YES;
@@ -208,8 +306,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     _innerClipView = innerClipView;
 
     // Add Constraints
-
-    NSDictionary *views = NSDictionaryOfVariableBindings(backgroundView, tapGestureRecognitionView, outerClipView, innerClipView);
+    NSDictionary *views = NSDictionaryOfVariableBindings(tapGestureRecognitionView);
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
 
@@ -249,31 +346,33 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 }
 
 - (void)containerViewWillLayoutSubviews {
-    _backgroundView.frame = [self frameOfOuterClipViewInContainerView];
-    _outerClipView.frame = [self frameOfOuterClipViewInContainerView];
-    _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:YES];
-    CGRect presentedViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
-    presentedViewFrame.origin = CGPointZero;
-    self.presentedView.frame = presentedViewFrame;
+
 }
 
 - (void)containerViewDidLayoutSubviews {
-    // Do something when subviews layout ended...
+
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
-    _backgroundView.alpha = 0;
-    _outerClipView.alpha = 0;
+    UISplitViewController *splitViewController = [self.presentingViewController isKindOfClass:[UISplitViewController class]] ? (UISplitViewController *)self.presentingViewController : nil;
+    BOOL hidesWhileTransition = splitViewController != nil && !((UISplitViewController *)self.presentingViewController).isCollapsed;
+    _backgroundView.hidden = _outerClipView.hidden = hidesWhileTransition;
+    BOOL __block dismissesAfterTransition = NO;
     [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
-        _backgroundView.frame = [self frameOfOuterClipViewInContainerView];
-        _outerClipView.frame = [self frameOfOuterClipViewInContainerView];
-        _innerClipView.frame = [self frameOfInnerClipViewInOuterClipView:YES];
-        CGRect presentedViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
-        presentedViewFrame.origin = CGPointZero;
-        self.presentedView.frame = presentedViewFrame;
+        CGRect outerClipViewFrame = [self frameOfOuterClipViewInContainerView];
+        CGRect innerClipViewFrame = [self frameOfInnerClipViewInOuterClipView:YES];
+        if (CGRectEqualToRect(outerClipViewFrame, CGRectZero)) {
+            dismissesAfterTransition = YES;
+        }
+        _backgroundView.frame = outerClipViewFrame;
+        _outerClipView.frame = outerClipViewFrame;
+        _innerClipView.frame = innerClipViewFrame;
+        self.presentedView.frame = CGRectMake(0, 0, innerClipViewFrame.size.width, innerClipViewFrame.size.height);
     } completion:^(id <UIViewControllerTransitionCoordinatorContext> context) {
-        _backgroundView.alpha = self.backgroundAlpha;
-        _outerClipView.alpha = 1;
+        _backgroundView.hidden = _outerClipView.hidden = NO;
+        if (dismissesAfterTransition) {
+            [self.presentingViewController dismissViewControllerAnimated:NO completion:NULL];
+        }
     }];
 }
 
