@@ -24,6 +24,7 @@
 		D621C4451A08BF74001F37D0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D621C43F1A08BF74001F37D0 /* Main.storyboard */; };
 		D621C4461A08BF74001F37D0 /* MSTDropDownMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */; };
 		D621C4481A08BF74001F37D0 /* MSTMasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */; };
+		D6490A141A38F42800204CAD /* Launch Screen.xib in Resources */ = {isa = PBXBuildFile; fileRef = D6490A131A38F42800204CAD /* Launch Screen.xib */; };
 		D6C6B1BC1A08FC8B003EEE90 /* MSTDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +69,7 @@
 		D621C4411A08BF74001F37D0 /* MSTDropDownMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDropDownMenuViewController.m; sourceTree = "<group>"; };
 		D621C4431A08BF74001F37D0 /* MSTMasterViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTMasterViewController.h; sourceTree = "<group>"; };
 		D621C4441A08BF74001F37D0 /* MSTMasterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTMasterViewController.m; sourceTree = "<group>"; };
+		D6490A131A38F42800204CAD /* Launch Screen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "Launch Screen.xib"; sourceTree = "<group>"; };
 		D6C6B1BA1A08FC8B003EEE90 /* MSTDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MSTDetailViewController.h; sourceTree = "<group>"; };
 		D6C6B1BB1A08FC8B003EEE90 /* MSTDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MSTDetailViewController.m; sourceTree = "<group>"; };
 		F19C8BE0318C02416A27489C /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,6 +156,7 @@
 		6003F594195388D20070C39A /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D6490A131A38F42800204CAD /* Launch Screen.xib */,
 				6003F595195388D20070C39A /* MSTDropDownPresentationController-Info.plist */,
 				6003F596195388D20070C39A /* InfoPlist.strings */,
 				6003F599195388D20070C39A /* main.m */,
@@ -284,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D621C4451A08BF74001F37D0 /* Main.storyboard in Resources */,
+				D6490A141A38F42800204CAD /* Launch Screen.xib in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
 				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
 			);
@@ -490,7 +494,6 @@
 			baseConfigurationReference = 4BF92DBD2121F7889CADC503 /* Pods-MSTDropDownPresentationController.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MSTDropDownPresentationController/MSTDropDownPresentationController-Prefix.pch";
 				INFOPLIST_FILE = "MSTDropDownPresentationController/MSTDropDownPresentationController-Info.plist";
@@ -505,7 +508,6 @@
 			baseConfigurationReference = C5382D013D342D9602B6FA27 /* Pods-MSTDropDownPresentationController.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "MSTDropDownPresentationController/MSTDropDownPresentationController-Prefix.pch";
 				INFOPLIST_FILE = "MSTDropDownPresentationController/MSTDropDownPresentationController-Info.plist";

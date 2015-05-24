@@ -1,9 +1,23 @@
 //
-//  MSTDropDownPresentationController.m
-//  MSTDropDownPresentationController
+//  Copyright (c) 2014 Masahiko Tsujita <masahikot.uec@icloud.com>
 //
-//  Created by Masahiko Tsujita on 14/11/01.
-//  Copyright (c) 2014 Masahiko Tsujita. All rights reserved.
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 #import "MSTDropDownPresentationController.h"
@@ -12,6 +26,12 @@
 static const NSInteger MSTDropDownPresentationControllerTapGestureRecognitionViewTag = 101;
 static const NSInteger MSTDropDownPresentationControllerTopEdgeClipViewTag = 102;
 static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag = 103;
+
+@interface UIViewController ()
+
+@property (strong, nonatomic, readwrite) MSTDropDownPresentationController *mst_dropDownPresentationController;
+
+@end
 
 @interface MSTRoundedCornerView : UIView
 
@@ -72,6 +92,25 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
         _sourceViewController = presentingViewController;
     }
     return self;
+}
+
+#pragma mark - Customizing Presentation Controller Appearances
+
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+    _cornerRadius = cornerRadius;
+    _innerClipView.cornerRadius = cornerRadius;
+}
+
+- (void)setLayoutMargins:(UIEdgeInsets)layoutMargins {
+    _layoutMargins = layoutMargins;
+    CGRect frame = [self frameOfInnerClipViewInOuterClipView:YES];
+    _innerClipView.frame = frame;
+    self.presentedView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+}
+
+- (void)setBackgroundAlpha:(CGFloat)backgroundAlpha {
+    _backgroundAlpha = backgroundAlpha;
+    _backgroundView.alpha = backgroundAlpha;
 }
 
 #pragma mark - Calculating View Frames
@@ -176,6 +215,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 
     // Rounded Corner Clip View
     MSTRoundedCornerView *innerClipView = [[MSTRoundedCornerView alloc] initWithFrame:[self frameOfInnerClipViewInOuterClipView:NO]];
+    innerClipView.cornerRadius = self.cornerRadius;
     innerClipView.tag = MSTDropDownPresentationControllerRoundedCornerClipViewTag;
     [outerClipView addSubview:innerClipView];
     _innerClipView = innerClipView;
@@ -184,6 +224,9 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     NSDictionary *views = NSDictionaryOfVariableBindings(tapGestureRecognitionView);
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
     [self.containerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tapGestureRecognitionView]|" options:0 metrics:nil views:views]];
+
+    //
+    self.presentedViewController.mst_dropDownPresentationController = self;
 
     // Animate in view transition
     [self.presentedViewController.transitionCoordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
@@ -207,6 +250,7 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
     if (completed) {
         [_backgroundView removeFromSuperview];
         [_tapGestureRecognitionView removeFromSuperview];
+        self.presentedViewController.mst_dropDownPresentationController = nil;
     }
 }
 
@@ -218,14 +262,6 @@ static const NSInteger MSTDropDownPresentationControllerRoundedCornerClipViewTag
 
 - (CGRect)frameOfPresentedViewInContainerView {
     return [self.containerView convertRect:[self frameOfInnerClipViewInOuterClipView:YES] fromView:_innerClipView];
-}
-
-- (void)containerViewWillLayoutSubviews {
-
-}
-
-- (void)containerViewDidLayoutSubviews {
-
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
@@ -319,7 +355,8 @@ static const NSTimeInterval MSTDropDownAnimationControllerDefaultAnimationDurati
 
 @end
 
-static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransitioningDelgateAssociationKey;
+static void *MSTDropDownTransitioningDelegateAssociationKey = &MSTDropDownTransitioningDelegateAssociationKey;
+static void *UIViewControllerMSTDropDownPresentationControllerAssociationKey = &UIViewControllerMSTDropDownPresentationControllerAssociationKey;
 
 @interface MSTDropDownTransitioningDelegateObject : NSObject <UIViewControllerTransitioningDelegate>
 
@@ -347,13 +384,22 @@ static void *MSTDropDownTransitioningDelgateAssociationKey = &MSTDropDownTransit
 @implementation UIViewController (MSTDropDownPresentationControllerSupport)
 
 - (id <UIViewControllerTransitioningDelegate>)mst_dropDownTransitioningDelegate {
-    id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey);
+    id object = objc_getAssociatedObject(self, MSTDropDownTransitioningDelegateAssociationKey);
     if (!object) {
         object = [[MSTDropDownTransitioningDelegateObject alloc] init];
-        objc_setAssociatedObject(self, MSTDropDownTransitioningDelgateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, MSTDropDownTransitioningDelegateAssociationKey, object, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     return object;
 }
+
+- (MSTDropDownPresentationController *)mst_dropDownPresentationController {
+    return objc_getAssociatedObject(self, UIViewControllerMSTDropDownPresentationControllerAssociationKey);
+}
+
+- (void)setMst_dropDownPresentationController:(MSTDropDownPresentationController *)mst_dropDownPresentationController {
+    objc_setAssociatedObject(self, UIViewControllerMSTDropDownPresentationControllerAssociationKey, mst_dropDownPresentationController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
 
 @end
 
