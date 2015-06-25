@@ -9,6 +9,6 @@
 // MSTDropDownPresentationController
 #define COCOAPODS_POD_AVAILABLE_MSTDropDownPresentationController
 #define COCOAPODS_VERSION_MAJOR_MSTDropDownPresentationController 0
-#define COCOAPODS_VERSION_MINOR_MSTDropDownPresentationController 1
-#define COCOAPODS_VERSION_PATCH_MSTDropDownPresentationController 0
+#define COCOAPODS_VERSION_MINOR_MSTDropDownPresentationController 2
+#define COCOAPODS_VERSION_PATCH_MSTDropDownPresentationController 2
 

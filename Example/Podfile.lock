@@ -1,5 +1,5 @@
 PODS:
-  - MSTDropDownPresentationController (0.1.0)
+  - MSTDropDownPresentationController (0.2.2)
 
 DEPENDENCIES:
   - MSTDropDownPresentationController (from `../`)
@@ -9,6 +9,6 @@ EXTERNAL SOURCES:
     :path: ../
 
 SPEC CHECKSUMS:
-  MSTDropDownPresentationController: bb55607c6c35059cbe64fac9f94ed7ec91cf0554
+  MSTDropDownPresentationController: e7e0561beb7a9665300d1e54431f123569d0fb4a
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.37.2
